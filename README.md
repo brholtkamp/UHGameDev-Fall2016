@@ -1,6 +1,11 @@
 # UH Game Dev Series - Fall 2016
-# Super Mario Bros - World 1-1
+## Super Mario Bros - World 1-1
 
-# References
-* http://noobtuts.com/unity/2d-super-mario-bros-game
-* http://www.spriters-resource.com/nes/supermariobros/
+# Sources Used
+Sprites: http://www.mariouniverse.com/sprites/nes/smb
+
+Font: http://www.fontspace.com/freaky-fonts/emulogic
+
+Sounds: http://themushroomkingdom.net/media/smb/wav
+
+Music: http://downloads.khinsider.com/game-soundtracks/album/super-mario-bros/
