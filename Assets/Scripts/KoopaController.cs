@@ -31,15 +31,10 @@ public class KoopaController : EnemyController {
                 }
 
                 // If we're a shell and we get hit on the left, we have to check if we're moving yet or not
-                if (point.normal == Vector2.left || point.normal == Vector2.right) {
-                    // If we're not moving, check if it's the player and if so, fly in that direction for being kicked
-                    if (Mathf.Abs(rigidBody.velocity.x) <= 0.0f) {
-                        if (collision.gameObject.tag == "Player") {
-                            Direction = -1.0f * point.normal.x;
-                            return;
-                        }
+                if (point.normal == Vector2.left || point.normal == Vector2.right && Mathf.Abs(rigidBody.velocity.x) > 0.0f) {
                     // We're flying, thus we need to hurt stuff
-                    } else if (collision.gameObject.tag == "Actor" || collision.gameObject.tag == "Player") {
+                    if (collision.gameObject.tag == "Actor" || collision.gameObject.tag == "Player") {
+                        // Check to see if we're hitting them in the same direction
                         var hurtableComponent = collision.gameObject.GetComponent<IHurt>();
                         if (hurtableComponent != null) {
                             hurtableComponent.Hurt(point);
@@ -55,6 +50,7 @@ public class KoopaController : EnemyController {
         // If we're a normal Koopa, get hurt and turn into a shell
         if (!IsShell) {
             IsShell = true;
+            BounceOffEnemies = false;
             StartCoroutine(HurtAnimation());
             Direction = 0.0f;
             controller.Speed = 0.0f;

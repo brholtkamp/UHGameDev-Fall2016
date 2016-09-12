@@ -9,6 +9,7 @@ public abstract class EnemyController : MonoBehaviour, IHurt {
 
     public float Direction = -1.0f;
     public bool Active = false;
+    public bool BounceOffEnemies = true;
 
     public void Awake() {
         controller = GetComponent<ActorController>();
@@ -38,8 +39,10 @@ public abstract class EnemyController : MonoBehaviour, IHurt {
 
         // If we hit something that isn't the player, we should turn around
         if (hit && hit.collider.tag != "Player") {
-            // Change direction
-            Direction *= -1.0f;
+            if ((hit.collider.tag == "Actor" && BounceOffEnemies) || hit.collider.tag != "Actor") {
+                // Change direction
+                Direction *= -1.0f;
+            }
         }
     }
 

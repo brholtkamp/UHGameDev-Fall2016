@@ -10,11 +10,6 @@ public class MarioController : MonoBehaviour, IHurt {
     public float RunMultiplier = 1.5f;
 
     /// <summary>
-    /// Amount of force to bounce off an enemy with
-    /// </summary>
-    public float BounceAmountWhenHittingEnemy = 6.0f;
-
-    /// <summary>
     /// Are we currently Big Mario?
     /// </summary>
     public bool IsBigMario {
