@@ -2,6 +2,9 @@
 
 using UnityEngine;
 
+[RequireComponent(typeof(Collider2D))]
+[RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(SpriteRenderer))]
 public class ActorController : MonoBehaviour {
     /// <summary>
     /// Speed of our actor's horizontal movement

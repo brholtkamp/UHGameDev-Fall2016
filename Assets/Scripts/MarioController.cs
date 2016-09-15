@@ -10,38 +10,15 @@ public class MarioController : MonoBehaviour {
     public float RunMultiplier = 1.5f;
 
     /// <summary>
-    /// Amount of force to bounce off an enemy with
-    /// </summary>
-    public float BounceAmountWhenHittingEnemy = 6.0f;
-
-    /// <summary>
     /// Are we currently Big Mario?
     /// </summary>
     public bool IsBigMario {
         get { return animator.runtimeAnimatorController.name.Contains("Big"); }
     }
 
-    /// <summary>
-    /// Is Mario currently invulnerable?
-    /// </summary>
-    public bool IsInvulnerable {
-        get { return currentInvulnerabilityTime > 0.0f; }
-    }
-
-    /// <summary>
-    /// Length of Mario's invulnerability after being hit
-    /// </summary>
-    public float InvulnerabilityDuration = 0.5f;
-
     private ActorController controller;
     private Jumping jumping;
     private Animator animator;
-    private SpriteRenderer spriteRenderer;
-
-    /// <summary>
-    /// Tracker for the amount of invulnerability left
-    /// </summary>
-    private float currentInvulnerabilityTime;
 
     /// <summary>
     /// Tracker to make sure the player was running before jumping if they want to keep the horizontal momentum of running
@@ -52,7 +29,6 @@ public class MarioController : MonoBehaviour {
         controller = GetComponent<ActorController>();
         jumping = GetComponent<Jumping>();
         animator = GetComponent<Animator>();
-        spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
     public void Update() {

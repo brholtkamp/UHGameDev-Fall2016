@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 public class CameraController : MonoBehaviour {
-    public Transform playerTransform;
+    private Transform playerTransform;
 
     public void Awake() {
         playerTransform = FindObjectOfType<MarioController>().transform;
