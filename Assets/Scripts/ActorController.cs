@@ -2,6 +2,9 @@
 
 using UnityEngine;
 
+[RequireComponent(typeof(Collider2D))]
+[RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(SpriteRenderer))]
 public class ActorController : MonoBehaviour {
     /// <summary>
     /// Speed of our actor's horizontal movement
@@ -89,12 +92,12 @@ public class ActorController : MonoBehaviour {
         // If our direction is positive, we're moving to the right
         if (direction > 0.0f) {
             FacingRight = true;
-        // Otherwise, we're going left
-        // Note: we don't care about 0.0f, because it'd be unusual for our character to constantly face right
+            // Otherwise, we're going left
+            // Note: we don't care about 0.0f, because it'd be unusual for our character to constantly face right
         } else if (direction < 0.0f) {
             FacingRight = false;
         }
-        
+
         // Set our Velocity to move on the next FixedUpdate tick
         Velocity = new Vector2(direction * Speed, rigidBody.velocity.y);
     }
