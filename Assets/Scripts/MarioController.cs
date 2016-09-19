@@ -18,7 +18,9 @@ public class MarioController : MonoBehaviour, IHurt {
         get { return !animator.runtimeAnimatorController.name.Contains("Little"); }
     }
 
-    // Are we currently Fire Mario?
+    /// <summary>
+    /// Are we currently Fire Mario?
+    /// </summary>
     public bool IsFireMario {
         get { return animator.runtimeAnimatorController.name.Contains("Fire"); }
     }
