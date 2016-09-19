@@ -18,6 +18,11 @@ public class MarioController : MonoBehaviour {
         get { return !animator.runtimeAnimatorController.name.Contains("Little"); }
     }
 
+    // Are we currently Fire Mario?
+    public bool IsFireMario {
+        get { return animator.runtimeAnimatorController.name.Contains("Fire"); }
+    }
+
     private ActorController controller;
     private Jumping jumping;
     private Animator animator;
