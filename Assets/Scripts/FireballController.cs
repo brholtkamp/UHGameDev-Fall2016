@@ -7,14 +7,12 @@ using UnityEngine;
 public class FireballController : MonoBehaviour {
     private ActorController controller;
     private Jumping jumping;
-    private Rigidbody2D rigidBody;
 
     public float Direction = 1.0f;
 
     public void Awake() {
         controller = GetComponent<ActorController>();
         jumping = GetComponent<Jumping>();
-        rigidBody = GetComponent<Rigidbody2D>();
     }
 
     public void Update() {

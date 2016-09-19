@@ -166,6 +166,7 @@ public class MarioController : MonoBehaviour, IHurt, ICanUsePowerups {
     public void Hurt(ContactPoint2D point) {
         // Only allow us to get hurt when we're no longer invulnerable
         if (!IsInvulnerable && !IsStarMario) {
+            // Turn into big Mario
             if (IsFireMario) {
                 TurnBigMario();
                 currentInvulnerabilityTime = InvulnerabilityDuration;

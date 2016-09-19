@@ -22,7 +22,7 @@ public class StarController : BasePowerup {
         }
     }
 
-    public void OnCollisionEnter2D(Collision2D collision) {
+    public new void OnCollisionEnter2D(Collision2D collision) {
         if (collision.contacts.All(point => point.normal != Vector2.up) && collision.gameObject.layer == LayerMask.NameToLayer("Terrain")) {
             Direction *= -1.0f;
         }
