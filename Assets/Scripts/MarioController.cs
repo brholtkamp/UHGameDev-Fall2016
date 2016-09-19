@@ -1,11 +1,12 @@
 ﻿using UnityEngine;
 
 using System.Collections;
+using System.Linq;
 
 [RequireComponent(typeof(ActorController))]
 [RequireComponent(typeof(Jumping))]
 [RequireComponent(typeof(Animator))]
-public class MarioController : MonoBehaviour, IHurt {
+public class MarioController : MonoBehaviour, IHurt, ICanUsePowerups {
     /// <summary>
     /// Multiplier for the velocity of running
     /// </summary>
@@ -16,6 +17,20 @@ public class MarioController : MonoBehaviour, IHurt {
     /// </summary>
     public bool IsBigMario {
         get { return !animator.runtimeAnimatorController.name.Contains("Little"); }
+    }
+
+    /// <summary>
+    /// Are we currently Fire Mario?
+    /// </summary> 
+    public bool IsFireMario {
+        get { return animator.runtimeAnimatorController.name.Contains("Fire"); }
+    }
+
+    /// <summary>
+    /// Are we currently Star Mario?
+    /// </summary>
+    public bool IsStarMario {
+        get { return currentStarTime > 0.0f; }
     }
 
     /// <summary>
@@ -30,8 +45,14 @@ public class MarioController : MonoBehaviour, IHurt {
     /// </summary>
     public float InvulnerabilityDuration = 0.5f;
 
+    /// <summary>
+    /// Length of Mario's star animation from a Star powerup
+    /// </summary>
+    public float StarDuration = 8.0f;
+
     private ActorController controller;
     private Jumping jumping;
+
     private Animator animator;
     private SpriteRenderer spriteRenderer;
     private GameManager gameManager;
@@ -40,6 +61,11 @@ public class MarioController : MonoBehaviour, IHurt {
     /// Tracker for the amount of invulnerability left
     /// </summary>
     private float currentInvulnerabilityTime;
+
+    /// <summary>
+    /// Tracker for the amount of star time left
+    /// </summary>
+    private float currentStarTime;
 
     /// <summary>
     /// Tracker to make sure the player was running before jumping if they want to keep the horizontal momentum of running
@@ -110,11 +136,40 @@ public class MarioController : MonoBehaviour, IHurt {
         } else if (!spriteRenderer.enabled) {
             spriteRenderer.enabled = true;
         }
+
+        if (IsStarMario) {
+            currentStarTime -= Time.deltaTime;
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha1)) {
+            TurnBigMario();
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha2)) {
+            TurnFireMario();
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha3)) {
+            TurnStarMario();
+        }
+    }
+
+    public void OnCollisionEnter2D(Collision2D collision) {
+        if (IsStarMario) {
+            var hurt = collision.gameObject.GetComponent<IHurt>();
+            if (hurt != null) {
+                hurt.Hurt(collision.contacts.First());
+            }
+        }
     }
 
     public void Hurt(ContactPoint2D point) {
         // Only allow us to get hurt when we're no longer invulnerable
-        if (!IsInvulnerable) {
+        if (!IsInvulnerable && !IsStarMario) {
+            if (IsFireMario) {
+                TurnBigMario();
+                currentInvulnerabilityTime = InvulnerabilityDuration;
+            }
             // Turn into little Mario
             if (IsBigMario) {
                 TurnLittleMario();
@@ -124,6 +179,10 @@ public class MarioController : MonoBehaviour, IHurt {
                 gameManager.Dead();
             }
         }
+    }
+
+    public void UsePowerup(BasePowerup powerup) {
+        powerup.ApplyPowerup(this.gameObject);
     }
 
     /// <summary>
@@ -137,6 +196,11 @@ public class MarioController : MonoBehaviour, IHurt {
     /// Transform this Mario into big Mario
     /// </summary>
     public void TurnBigMario() {
+        var fireballPowerup = GetComponent<FireballPowerupController>();
+        if (fireballPowerup != null) {
+            Destroy(fireballPowerup);
+        }
+
         StartCoroutine(ChangeAnimatorController("AnimationControllers/BigMarioController"));
     }
 
@@ -144,7 +208,17 @@ public class MarioController : MonoBehaviour, IHurt {
     /// Transform this Mario into fire Mario
     /// </summary>
     public void TurnFireMario() {
+        var existingFireballController = GetComponent<FireballPowerupController>();
+        if (existingFireballController == null) {
+            gameObject.AddComponent<FireballPowerupController>();
+        }
+
         StartCoroutine(ChangeAnimatorController("AnimationControllers/FireMarioController"));
+    }
+
+    public void TurnStarMario() {
+        currentStarTime = StarDuration;
+        StartCoroutine(StarAnimation());
     }
 
     private IEnumerator ChangeAnimatorController(string name) {
@@ -192,5 +266,27 @@ public class MarioController : MonoBehaviour, IHurt {
     private void IdleAnimation() {
         WalkAnimation(false);
         RunAnimation(false);
+    }
+
+    private IEnumerator StarAnimation() {
+        // https://simple.wikipedia.org/wiki/Rainbow
+        Color[] colors = {
+            new Color(255, 0, 0),
+            new Color(255, 127, 0), 
+            new Color(255, 255, 0), 
+            new Color(0, 255, 0), 
+            new Color(0, 0, 255), 
+            new Color(75, 0, 130), 
+            new Color(139, 0, 255)
+        };
+
+        while (IsStarMario) {
+            foreach (var color in colors) {
+                spriteRenderer.color = color;
+                yield return new WaitForEndOfFrame();
+            }
+        }
+
+        spriteRenderer.color = Color.white;
     }
 }

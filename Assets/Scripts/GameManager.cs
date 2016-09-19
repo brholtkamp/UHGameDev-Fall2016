@@ -7,6 +7,8 @@ public class GameManager : MonoBehaviour {
     /// </summary>
     public float DeathPlane = -5.0f;
 
+    public int Lives = 3;
+
     private Transform playerTransform;
 
     public void Awake() {
