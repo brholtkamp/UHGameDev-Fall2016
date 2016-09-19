@@ -182,7 +182,7 @@ public class MarioController : MonoBehaviour, IHurt, ICanUsePowerups {
     }
 
     public void UsePowerup(BasePowerup powerup) {
-        powerup.ApplyPowerup(this.gameObject);
+        powerup.ApplyPowerup(gameObject);
     }
 
     /// <summary>

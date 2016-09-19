@@ -20,7 +20,7 @@ public class FireballController : MonoBehaviour {
     public void Update() {
         controller.Move(Direction);
 
-        if (Mathf.Abs(rigidBody.velocity.y) <= 0.1f) {
+        if (controller.IsGrounded) {
             jumping.Jump();
         }
     }
