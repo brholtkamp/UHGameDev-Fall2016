@@ -18,6 +18,11 @@ public class MarioController : MonoBehaviour, IHurt {
         get { return !animator.runtimeAnimatorController.name.Contains("Little"); }
     }
 
+    // Are we currently Fire Mario?
+    public bool IsFireMario {
+        get { return animator.runtimeAnimatorController.name.Contains("Fire"); }
+    }
+
     /// <summary>
     /// Is Mario currently invulnerable?
     /// </summary>
@@ -115,6 +120,11 @@ public class MarioController : MonoBehaviour, IHurt {
     public void Hurt(ContactPoint2D point) {
         // Only allow us to get hurt when we're no longer invulnerable
         if (!IsInvulnerable) {
+            // Turn into big Mario
+            if (IsFireMario) {
+                TurnBigMario();
+                currentInvulnerabilityTime = InvulnerabilityDuration;
+            }
             // Turn into little Mario
             if (IsBigMario) {
                 TurnLittleMario();
