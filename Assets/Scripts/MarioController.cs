@@ -6,6 +6,7 @@ using System.Linq;
 [RequireComponent(typeof(ActorController))]
 [RequireComponent(typeof(Jumping))]
 [RequireComponent(typeof(Animator))]
+[RequireComponent(typeof(AudioSource))]
 public class MarioController : MonoBehaviour, IHurt, ICanUsePowerups {
     /// <summary>
     /// Multiplier for the velocity of running
@@ -56,6 +57,8 @@ public class MarioController : MonoBehaviour, IHurt, ICanUsePowerups {
     private Animator animator;
     private SpriteRenderer spriteRenderer;
     private GameManager gameManager;
+    private AudioSource audioSource;
+    private BoxCollider2D boxCollider;
 
     /// <summary>
     /// Tracker for the amount of invulnerability left
@@ -77,6 +80,8 @@ public class MarioController : MonoBehaviour, IHurt, ICanUsePowerups {
         jumping = GetComponent<Jumping>();
         animator = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+        audioSource = GetComponent<AudioSource>();
+        boxCollider = GetComponent<BoxCollider2D>();
 
         gameManager = FindObjectOfType<GameManager>();
     }
@@ -119,6 +124,7 @@ public class MarioController : MonoBehaviour, IHurt, ICanUsePowerups {
             // Crouch and shrink the collider
             CrouchingAnimation(true);
             controller.UpdateCollider();
+            UsePipe();
         } else if (verticalInput >= 0.0f && animator.GetBool("IsCrouching")){
             // Stand and enlarge the collider
             CrouchingAnimation(false);
@@ -163,6 +169,18 @@ public class MarioController : MonoBehaviour, IHurt, ICanUsePowerups {
         }
     }
 
+    private void UsePipe() {
+        var hits = Physics2D.OverlapBoxAll(boxCollider.bounds.center, boxCollider.bounds.size, 0.0f);
+
+        foreach (var hit in hits) {
+            var pipe = hit.GetComponent<PipeController>();
+
+            if (pipe != null) {
+                transform.position = pipe.TeleportLocation;
+            }
+        }
+    }
+
     public void Hurt(ContactPoint2D point) {
         // Only allow us to get hurt when we're no longer invulnerable
         if (!IsInvulnerable && !IsStarMario) {
@@ -177,6 +195,7 @@ public class MarioController : MonoBehaviour, IHurt, ICanUsePowerups {
                 currentInvulnerabilityTime = InvulnerabilityDuration;
             // Oops, we've died
             } else {
+                HurtAnimation();
                 gameManager.Dead();
             }
         }
@@ -184,6 +203,7 @@ public class MarioController : MonoBehaviour, IHurt, ICanUsePowerups {
 
     public void UsePowerup(BasePowerup powerup) {
         powerup.ApplyPowerup(gameObject);
+        audioSource.PlayOneShot(Resources.Load<AudioClip>("Sounds/Powerup"));
     }
 
     /// <summary>
@@ -250,6 +270,10 @@ public class MarioController : MonoBehaviour, IHurt, ICanUsePowerups {
     private void JumpAnimation() {
         animator.SetTrigger("JumpPressed");
         animator.SetBool("IsGrounded", false);
+
+        if (controller.IsGrounded) {
+            audioSource.PlayOneShot(Resources.Load<AudioClip>(IsBigMario ? "Sounds/BigJump" : "Sounds/SmallJump"));
+        }
     }
 
     private void GroundedAnimation(bool value) {
@@ -261,6 +285,8 @@ public class MarioController : MonoBehaviour, IHurt, ICanUsePowerups {
     }
 
     private void HurtAnimation() {
+        IdleAnimation();
+        animator.SetBool("IsGrounded", false);
         animator.SetTrigger("Hurt");
     }
 
