@@ -18,6 +18,7 @@ public class CoinBlockController : MonoBehaviour {
 
     public void OnCollisionEnter2D(Collision2D collision) {
         if (collision.gameObject.tag == "Player" && collision.contacts.All(point => point.normal == Vector2.up) && !used) {
+            FindObjectOfType<ScoreController>().Score += 100;
             CoinsRemaining--;
             coinManager.AddCoin();
 

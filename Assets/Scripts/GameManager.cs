@@ -59,7 +59,15 @@ public class GameManager : MonoBehaviour {
 
         died = true;
 
-        StartCoroutine(ShowRespawnScreen());
+        if (Lives > 1) {
+            StartCoroutine(ShowRespawnScreen());
+        } else {
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+#else
+            Application.Quit();
+#endif
+        }
     }
 
     private IEnumerator ShowRespawnScreen() {

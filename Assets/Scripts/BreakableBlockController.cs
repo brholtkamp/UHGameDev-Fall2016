@@ -6,6 +6,7 @@ public class BreakableBlockController : MonoBehaviour {
         var marioController = collision.gameObject.GetComponent<MarioController>();
 
         if (marioController != null && marioController.IsBigMario && collision.contacts.All(point => point.normal == Vector2.up)) {
+            FindObjectOfType<ScoreController>().Score += 100;
             Destroy(gameObject);
         }
     }

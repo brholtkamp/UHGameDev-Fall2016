@@ -1,7 +1,5 @@
 ﻿using UnityEngine;
 using System.Collections;
-using System.Runtime.InteropServices;
-using UnityEngine.SceneManagement;
 
 public class FlagController : MonoBehaviour {
     public float FlagAnimationDuration = 1.0f;
@@ -73,10 +71,13 @@ public class FlagController : MonoBehaviour {
         }
 
         var numberOfFireworks = time.CurrentTime % 2 != 0 ? time.CurrentTime % 10 : 0;
+        var scoreManager = FindObjectOfType<ScoreController>();
 
         // Reduce the time until 0
         while (time.CurrentTime > 0) {
             time.CurrentTime -= 9;
+            scoreManager.Score += 100;
+            
 
             if (time.CurrentTime < 0) {
                 time.CurrentTime = 0;

@@ -17,6 +17,7 @@ public class GoombaController : EnemyController {
     }
 
     public override void Hurt(ContactPoint2D point) {
+        FindObjectOfType<ScoreController>().Score += 100;
         StartCoroutine(DeathAnimation());
     }
 

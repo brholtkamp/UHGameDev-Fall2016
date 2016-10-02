@@ -190,7 +190,7 @@ public class MarioController : MonoBehaviour, IHurt, ICanUsePowerups {
                 currentInvulnerabilityTime = InvulnerabilityDuration;
             }
             // Turn into little Mario
-            if (IsBigMario) {
+            else if (IsBigMario) {
                 TurnLittleMario();
                 currentInvulnerabilityTime = InvulnerabilityDuration;
             // Oops, we've died

@@ -5,6 +5,7 @@ public abstract class BasePowerup : MonoBehaviour {
         if (collision.gameObject.tag == "Player") {
             var canUsePowerups = collision.gameObject.GetComponent<ICanUsePowerups>();
             if (canUsePowerups != null) {
+                FindObjectOfType<ScoreController>().Score += 1000;
                 canUsePowerups.UsePowerup(this);
                 Destroy(gameObject);
             }
