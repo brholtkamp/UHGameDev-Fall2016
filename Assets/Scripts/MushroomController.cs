@@ -24,9 +24,11 @@ public class MushroomController : BasePowerup {
     }
 
     public override void ApplyPowerup(GameObject targetObject) {
+        // Get our MarioController
         var controller = targetObject.GetComponent<MarioController>();
         if (controller != null) {
             if (!controller.IsBigMario) {
+                // Turn Little Mario into Big Mario
                 controller.TurnBigMario();
             }
         }
