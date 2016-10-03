@@ -7,8 +7,19 @@ public abstract class EnemyController : MonoBehaviour, IHurt {
     protected Rigidbody2D rigidBody;
     protected Animator animator;
 
+    /// <summary>
+    /// Initial direction to move in
+    /// </summary>
     public float Direction = -1.0f;
+    
+    /// <summary>
+    /// Are we currently moving?
+    /// </summary>
     public bool Active = false;
+
+    /// <summary>
+    /// Should we bounce off enemies if we bump into one?
+    /// </summary>
     public bool BounceOffEnemies = true;
 
     public void Awake() {

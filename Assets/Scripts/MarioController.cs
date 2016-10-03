@@ -124,6 +124,8 @@ public class MarioController : MonoBehaviour, IHurt, ICanUsePowerups {
             // Crouch and shrink the collider
             CrouchingAnimation(true);
             controller.UpdateCollider();
+
+            // Try to use a pipe
             UsePipe();
         } else if (verticalInput >= 0.0f && animator.GetBool("IsCrouching")){
             // Stand and enlarge the collider
@@ -143,10 +145,12 @@ public class MarioController : MonoBehaviour, IHurt, ICanUsePowerups {
             spriteRenderer.enabled = true;
         }
 
+        // If we're Star Mario, decrement the time we have remaining as Star Mario
         if (IsStarMario) {
             currentStarTime -= Time.deltaTime;
         }
 
+        // Debugging inputs to check transitions
         if (Input.GetKeyDown(KeyCode.Alpha1)) {
             TurnBigMario();
         }
@@ -162,6 +166,7 @@ public class MarioController : MonoBehaviour, IHurt, ICanUsePowerups {
 
     public void OnCollisionEnter2D(Collision2D collision) {
         if (IsStarMario) {
+            // Since we're Star Mario, if we find anything hurtable, we should hurt it
             var hurt = collision.gameObject.GetComponent<IHurt>();
             if (hurt != null) {
                 hurt.Hurt(collision.contacts.First());
@@ -170,12 +175,15 @@ public class MarioController : MonoBehaviour, IHurt, ICanUsePowerups {
     }
 
     private void UsePipe() {
+        // Try to find a pipe below us
         var hits = Physics2D.OverlapBoxAll(boxCollider.bounds.center, boxCollider.bounds.size, 0.0f);
 
         foreach (var hit in hits) {
+            // See if this has a PipeController
             var pipe = hit.GetComponent<PipeController>();
 
             if (pipe != null) {
+                // Teleport to the new location
                 transform.position = pipe.TeleportLocation;
             }
         }
@@ -202,6 +210,7 @@ public class MarioController : MonoBehaviour, IHurt, ICanUsePowerups {
     }
 
     public void UsePowerup(BasePowerup powerup) {
+        // Pass the responsibility to use the powerup back to the item itself to do to Mario
         powerup.ApplyPowerup(gameObject);
         audioSource.PlayOneShot(Resources.Load<AudioClip>("Sounds/Powerup"));
     }
@@ -236,7 +245,10 @@ public class MarioController : MonoBehaviour, IHurt, ICanUsePowerups {
 
         StartCoroutine(ChangeAnimatorController("AnimationControllers/FireMarioController"));
     }
-
+    
+    /// <summary>
+    /// Transform this Mario into Star Mario
+    /// </summary>
     public void TurnStarMario() {
         currentStarTime = StarDuration;
         StartCoroutine(StarAnimation());
@@ -272,6 +284,7 @@ public class MarioController : MonoBehaviour, IHurt, ICanUsePowerups {
         animator.SetBool("IsGrounded", false);
 
         if (controller.IsGrounded) {
+            // Play the sound clip if we happen to be grounded
             audioSource.PlayOneShot(Resources.Load<AudioClip>(IsBigMario ? "Sounds/BigJump" : "Sounds/SmallJump"));
         }
     }
@@ -308,12 +321,14 @@ public class MarioController : MonoBehaviour, IHurt, ICanUsePowerups {
         };
 
         while (IsStarMario) {
+            // Iterate through all of the colors and change them out on each frame
             foreach (var color in colors) {
                 spriteRenderer.color = color;
                 yield return new WaitForEndOfFrame();
             }
         }
 
+        // Reset the main rendering color to white so the sprite doesn't look off
         spriteRenderer.color = Color.white;
     }
 }

@@ -47,7 +47,9 @@ public class KoopaController : EnemyController {
     }
 
     public override void Hurt(ContactPoint2D point) {
+        // Add score
         FindObjectOfType<ScoreController>().Score += 100;
+
         // If we're a normal Koopa, get hurt and turn into a shell
         if (!IsShell) {
             IsShell = true;

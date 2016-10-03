@@ -7,7 +7,9 @@ public class FlagController : MonoBehaviour {
     private GameObject flag;
 
     public void Awake() {
+        // Iterate through all of our children
         foreach (Transform child in transform) {
+            // Find the one named flag
             if (child.name == "Flag") {
                 flag = child.gameObject;
             }
@@ -64,21 +66,27 @@ public class FlagController : MonoBehaviour {
         // Determine the end point of the camera, of which is just 6 units over
         var destinationX = camera.transform.position.x + 6.0f;
 
+        // Slide over until the camera is focused on the castle
         while (camera.transform.position.x < destinationX) {
             var distanceToMove = distance * Time.deltaTime;
             camera.transform.position = new Vector3(camera.transform.position.x + distanceToMove, camera.transform.position.y, camera.transform.position.z);
             yield return new WaitForEndOfFrame();
         }
 
+        // Determine the number of fireworks to use, which is only if the last digit of the time is an odd number
         var numberOfFireworks = time.CurrentTime % 2 != 0 ? time.CurrentTime % 10 : 0;
+        
+        // Grab the score manager
         var scoreManager = FindObjectOfType<ScoreController>();
 
         // Reduce the time until 0
         while (time.CurrentTime > 0) {
             time.CurrentTime -= 9;
-            scoreManager.Score += 100;
-            
 
+            // Add points for the time
+            scoreManager.Score += 100;
+
+            // If we happen to go below, correct it back up to 0
             if (time.CurrentTime < 0) {
                 time.CurrentTime = 0;
             }
@@ -87,14 +95,19 @@ public class FlagController : MonoBehaviour {
         }
 
         while (numberOfFireworks > 0) {
+            // Find a new location randomly above the castle
             var location = new Vector2(camera.transform.position.x + Random.Range(-5, 5), 7 + Random.Range(0, 3));
 
+            // Create a new firework at the location
             var fireworkGameObject = Instantiate(Resources.Load<GameObject>("Prefabs/Fireworks"), location, Quaternion.identity);
 
+            // Consume this firework
             numberOfFireworks--;
 
+            // Wait for the animation to finish
             yield return new WaitForSeconds(0.5f);
 
+            // Clean up the firework
             Destroy(fireworkGameObject);
         }
 
