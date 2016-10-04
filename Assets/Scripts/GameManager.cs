@@ -113,7 +113,8 @@ public class GameManager : MonoBehaviour {
 
         yield return new WaitForSeconds(4.0f);
 
-        var jsonData = JsonUtility.ToJson(new SaveData { Lives = Lives});
+        var data = new SaveData { Lives = Lives };
+        var jsonData = JsonUtility.ToJson(data);
         File.WriteAllText(FilePath, jsonData);
 
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
