@@ -47,5 +47,9 @@ public class TimeManager : MonoBehaviour {
         if (CurrentTime < LowTime) {
             musicManager.SpeedUpMusic();
         }
+
+        if (CurrentTime < 0) {
+            FindObjectOfType<GameManager>().Dead();
+        }
     }
 }
