@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System.IO;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
@@ -12,11 +13,26 @@ public class GameManager : MonoBehaviour {
 
     public int Lives = 3;
 
+    /// <summary>
+    /// Path to save data
+    /// </summary>
+    /// <returns></returns>
+    public string FilePath {
+        get {
+            return Application.persistentDataPath + "/lives.json";
+        }
+    }
+
     private Transform playerTransform;
 
     private bool died = false;
 
     public void Awake() {
+        if (File.Exists(FilePath)) {
+            var data = (SaveData)JsonUtility.FromJson(File.ReadAllText(FilePath), typeof(SaveData));
+            Lives = data.Lives;
+        }
+
         playerTransform = FindObjectOfType<MarioController>().transform;
     }
 
@@ -44,7 +60,7 @@ public class GameManager : MonoBehaviour {
 
         // Play audio clip
         FindObjectOfType<Camera>().GetComponent<AudioSource>().PlayOneShot(Resources.Load<AudioClip>("Sounds/MarioDied"));
-        
+
         // Make Mario fly upwards a small amount and fall down
         var playerRigidbody = playerTransform.GetComponent<Rigidbody2D>();
         playerRigidbody.velocity = Vector2.up * 20.0f;
@@ -59,9 +75,10 @@ public class GameManager : MonoBehaviour {
 
         died = true;
 
-        if (Lives > 1) {
+        if (Lives > -1) {
             StartCoroutine(ShowRespawnScreen());
         } else {
+            File.Delete(FilePath);
 #if UNITY_EDITOR
             UnityEditor.EditorApplication.isPlaying = false;
 #else
@@ -96,6 +113,13 @@ public class GameManager : MonoBehaviour {
 
         yield return new WaitForSeconds(4.0f);
 
+        var jsonData = JsonUtility.ToJson(new SaveData { Lives = Lives});
+        File.WriteAllText(FilePath, jsonData);
+
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    private class SaveData {
+        public int Lives;
     }
 }
